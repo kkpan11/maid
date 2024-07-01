@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.2.5
+version: 1.2.9+29
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -30,39 +30,41 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  image: ^4.1.3
+  crypto: ^3.0.3
+  image: ^4.1.7
   path_provider: ^2.0.2
   permission_handler: ^11.0.1
   shared_preferences: ^2.0.20
   cupertino_icons: ^1.0.2
   url_launcher: ^6.1.10
-  file_picker: ^6.1.1
+  file_picker: ^8.0.0
   path: ^1.8.3
   system_info2: ^4.0.0
   flutter_linkify: ^6.0.0
-  linkify: ^5.0.0
-  filesystem_picker: ^4.1.0
   http: ^1.1.0
-  device_info_plus: ^9.1.1
   provider: ^6.1.1
+  device_info_plus: ^9.1.1
   langchain: ^0.5.0
   langchain_openai: ^0.5.0
+  langchain_ollama: ^0.1.0
   langchain_mistralai: ^0.1.0
   receive_sharing_intent: ^1.6.7
   network_info_plus: ^4.1.0+1
   lan_scanner: ^4.0.0+1
-  maid_ui:
-    path: packages/maid_ui
   maid_llm:
     path: packages/maid_llm
   google_generative_ai: ^0.2.3
-  langchain_ollama: ^0.1.0
+  flutter_resizable_container: ^2.0.0
+  flutter_svg: ^2.0.10+1
+  dio: ^5.4.3+1
 
 dev_dependencies:
-  msix: ^3.9.1
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_launcher_icons: ^0.13.1
+  mockito: ^5.4.4
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -86,39 +88,10 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/assets-and-images/#from-packages
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
-msix_config:
-  display_name: Maid
-  publisher_display_name: Dane Madsen
-  identity_name: com.danemadsen.maid
-  msix_version: 1.2.5
-  logo_path: assets/maid.png
 flutter_launcher_icons:
   android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
   image_path: "assets/maid.png"
   windows:
     generate: true

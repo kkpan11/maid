@@ -1,0 +1,61 @@
+name: Build macOS
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:        
+  build:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.2'
+        
+      - name: Install dependencies
+        run: |
+          brew install cmake ninja
+
+      - name: Decode macOS Certificate
+        run: |
+          echo "${{ secrets.APPLE_CERTIFICATE }}" | base64 --decode > macos-cert.p12
+
+      - name: Import macOS Certificate
+        run: |
+          security create-keychain -p github-action macos-build.keychain
+          security import macos-cert.p12 -k ~/Library/Keychains/macos-build.keychain -P ${{ secrets.APPLE_PASSWORD }} -T /usr/bin/codesign
+          security list-keychains -s ~/Library/Keychains/macos-build.keychain
+          security default-keychain -s ~/Library/Keychains/macos-build.keychain
+          security unlock-keychain -p github-action ~/Library/Keychains/macos-build.keychain
+          security set-key-partition-list -S apple-tool:,apple: -s -k github-action ~/Library/Keychains/macos-build.keychain
+
+      - name: Build macOS App
+        run: |
+          flutter pub get
+          flutter build macos
+
+      - name: Sign the App
+        run: |
+          codesign --deep --force --verbose --sign ${{ secrets.APPLE_SIGNING_IDENTITY }} build/macos/Build/Products/Release/maid.app
+
+      - name: Set execute permissions
+        run: |
+          chmod +x build/macos/Build/Products/Release/maid.app
+
+      - name: Upload macOS Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: maid-macos-${{ matrix.arch }}
+          path: build/macos/Build/Products/Release/maid.app

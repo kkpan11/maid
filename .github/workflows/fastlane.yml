@@ -1,9 +1,18 @@
-name: Validate Fastlane Supply Metadata
+name: Validate Fastlane
 
 on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'fastlane/**'
   pull_request:
     branches:
       - main
+      - dev
+    paths:
+      - 'fastlane/**'
 
 jobs:
   validate_metadata:

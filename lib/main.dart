@@ -1,80 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:maid/providers/user.dart';
-import 'package:maid/ui/mobile/pages/home_page.dart';
-import 'package:maid/providers/session.dart';
-import 'package:maid/providers/character.dart';
-import 'package:maid/static/themes.dart';
+import 'package:maid/classes/providers/app_data.dart';
+import 'package:maid/classes/providers/app_preferences.dart';
+import 'package:maid/classes/providers/huggingface_selection.dart';
+import 'package:maid/classes/providers/user.dart';
+import 'package:maid/ui/desktop/app.dart';
+import 'package:maid/ui/mobile/app.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  AppPreferences appPreferences = await AppPreferences.last;
+  AppData appData = await AppData.last;
+  User user = await User.last;
+
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => MainProvider()),
-        ChangeNotifierProvider(create: (context) => User()),
-        ChangeNotifierProvider(create: (context) => Character()),
-        ChangeNotifierProvider(create: (context) => Session()),
-      ],
-      child: const MaidApp(),
-    ),
+    MaidApp(
+      user: user, 
+      appPreferences: appPreferences, 
+      appData: appData
+    )
   );
 }
 
-class MainProvider extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.dark;
-  bool _initialised = false;
+class MaidApp extends StatelessWidget {
+  final AppPreferences appPreferences;
+  final AppData appData;
+  final User user;
 
-  ThemeMode get themeMode => _themeMode;
+  const MaidApp({
+    super.key, 
+    required this.user, 
+    required this.appPreferences, 
+    required this.appData,
+  });
 
-  bool get isDarkMode => _themeMode == ThemeMode.dark;
-
-  bool get initialised => _initialised;
-
-  void toggleTheme() {
-    _themeMode =
-        _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
-    notifyListeners();
-  }
-
-  void init() {
-    _initialised = true;
-  }
-
-  void reset() {
-    _initialised = false;
-    notifyListeners();
-  }
-}
-
-class MaidApp extends StatefulWidget {
-  const MaidApp({super.key});
-
-  @override
-  MaidAppState createState() => MaidAppState();
-}
-
-class MaidAppState extends State<MaidApp> {
   @override
   Widget build(BuildContext context) {
-    return Consumer4<MainProvider, User, Character, Session>(
-      builder: (context, mainProvider, user, character, session, child) {
-        if (!mainProvider.initialised) {
-          mainProvider.init();
-          user.init();
-          character.init();
-          session.init();
-        }
-
-        return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'Maid',
-            theme: Themes.lightTheme(),
-            darkTheme: Themes.darkTheme(),
-            themeMode: mainProvider.themeMode,
-            home: const HomePage(title: "Maid"));
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => appPreferences),
+        ChangeNotifierProvider(create: (context) => appData),
+        ChangeNotifierProvider(create: (context) => user),
+        ChangeNotifierProvider(create: (context) => HuggingfaceSelection())
+      ],
+      child: Consumer<AppPreferences>(
+        builder: (context, appPreferences, child) {
+          if (appPreferences.isDesktop) {
+            return const DesktopApp();
+          } 
+          else {
+            return const MobileApp();
+          }
+        },
+      ),
     );
   }
 }
