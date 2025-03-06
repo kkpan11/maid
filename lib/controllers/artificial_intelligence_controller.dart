@@ -239,6 +239,10 @@ class LlamaCppController extends ArtificialIntelligenceController {
   }
 
   void pickModel() async {
+    if (_model != null && PlatformExtension.isMobile) {
+      await File(_model!).delete();
+    }
+
     _model = null;
     
     final result = await FilePicker.platform.pickFiles(
@@ -272,6 +276,10 @@ class LlamaCppController extends ArtificialIntelligenceController {
   }
 
   void loadModelFile(String path) async {
+    if (_model != null && PlatformExtension.isMobile) {
+      await File(_model!).delete();
+    }
+    
     assert (RegExp(r'\.gguf$', caseSensitive: false).hasMatch(path));
     _model = path;
     reloadModel();
