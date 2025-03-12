@@ -55,7 +55,7 @@ android {
             enable true
             reset()
             include 'arm64-v8a', 'x86_64'  // Only include desired ABIs
-            universalApk false  // Set to true if you want a universal APK
+            universalApk true  // Set to true if you want a universal APK
         }
     }
 
